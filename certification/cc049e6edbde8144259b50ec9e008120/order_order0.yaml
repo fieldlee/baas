@@ -1,0 +1,44 @@
+version: '2'
+
+networks:
+  default:
+
+services:
+
+  order0.51mm.com:
+    container_name: order0.51mm.com
+    image: hyperledger/fabric-orderer
+    privileged: true
+    environment:
+      - GODEBUG=netdns=go
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=order0
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/crypto/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/crypto/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/crypto/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/crypto/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/etc/hyperledger/crypto/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/etc/hyperledger/crypto/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/etc/hyperledger/crypto/orderer/tls/ca.crt]
+      - ORDERER_KAFKA_TOPIC_REPLICATIONFACTOR=1
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=3s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=50s
+      - ORDERER_KAFKA_VERBOSE=true
+
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderers
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+      - /home/czp/PycharmProjects/baas/certification/cc049e6edbde8144259b50ec9e008120:/etc/hyperledger/configtx
+      - /home/czp/PycharmProjects/baas/certification/cc049e6edbde8144259b50ec9e008120/crypto-config:/etc/hyperledger/fabric/crypto
+      - /home/czp/PycharmProjects/baas/certification/cc049e6edbde8144259b50ec9e008120/crypto-config/ordererOrganizations/51mm.com/orderers/order0.51mm.com/msp:/etc/hyperledger/crypto/orderer/msp
+      - /home/czp/PycharmProjects/baas/certification/cc049e6edbde8144259b50ec9e008120/crypto-config/ordererOrganizations/51mm.com/orderers/order0.51mm.com/tls:/etc/hyperledger/crypto/orderer/tls
+      - order0.51mm.com:/etc/hyperledger/production/orderer
+
+    networks:
+      - default

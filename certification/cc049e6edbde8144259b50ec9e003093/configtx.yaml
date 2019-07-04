@@ -1,0 +1,75 @@
+
+Organizations:
+    - &OrdererOrg
+        Name: order
+        ID: order
+        MSPDir: /home/czp/PycharmProjects/baas/certification/cc049e6edbde8144259b50ec9e003093/crypto-config/ordererOrganizations/51mm.com/msp
+        AdminPrincipal: Role.ADMIN
+#######List-Start
+    - &mmOrg
+        Name: mmOrg
+        ID: mmOrg
+        MSPDir: /home/czp/PycharmProjects/baas/certification/cc049e6edbde8144259b50ec9e003093/crypto-config/peerOrganizations/mmOrg.51mm.com/msp
+        AdminPrincipal: Role.ADMIN
+        AnchorPeers:
+            - Host: 192.168.0.203
+              Port: 7051
+#######List-End
+#######List-Start
+    - &oneOrg
+        Name: oneOrg
+        ID: oneOrg
+        MSPDir: /home/czp/PycharmProjects/baas/certification/cc049e6edbde8144259b50ec9e003093/crypto-config/peerOrganizations/oneOrg.51mm.com/msp
+        AdminPrincipal: Role.ADMIN
+        AnchorPeers:
+            - Host: 192.168.0.203
+              Port: 7051
+#######List-End
+Orderer: &OrdererDefaults
+    OrdererType: solo
+    Addresses:
+#######OrderList-Start
+        - order0.51mm.com:7050
+#######OrderList-End
+    BatchTimeout: 4s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 1024 KB
+    Kafka:
+        Brokers:
+            - 127.0.0.1:9092
+    Organizations:
+Application: &ApplicationDefaults
+    Organizations:
+
+
+Profiles:
+    ProjectOrgsOrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+#######List-Start
+                    - *mmOrg
+#######List-End
+#######List-Start
+                    - *oneOrg
+#######List-End
+    ProjectOrgsChannel:
+        Consortium: SampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+#######List-Start
+                - *mmOrg
+#######List-End
+#######List-Start
+                - *oneOrg
+#######List-End
+
+
+

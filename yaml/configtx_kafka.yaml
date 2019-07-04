@@ -1,0 +1,60 @@
+
+Organizations:
+    - &OrdererOrg
+        Name: -OrderIDForReplace-
+        ID: -OrderIDForReplace-
+        MSPDir: -ProjectDIR-/crypto-config/ordererOrganizations/-DomainForReplace-/msp
+        AdminPrincipal: Role.ADMIN
+#######List-Start
+    - &-OrgIDForReplace-
+        Name: -OrgIDForReplace-
+        ID: -OrgIDForReplace-
+        MSPDir: -ProjectDIR-/crypto-config/peerOrganizations/-OrgIDForReplace-.-DomainForReplace-/msp
+        AdminPrincipal: Role.ADMIN
+        AnchorPeers:
+            - Host: -AnchorIpForReplace-
+              Port: -AnchorPortForReplace-
+#######List-End
+Orderer: &OrdererDefaults
+    OrdererType: kafka
+    Addresses:
+#######OrderList-Start
+        - -OrderIDForReplace-.-DomainForReplace-:-OrderPortForReplace-
+#######OrderList-End
+    BatchTimeout: 4s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 98 MB
+        PreferredMaxBytes: 512 KB
+    Kafka:
+        Brokers:
+            - kafka0.-DomainForReplace-:9092
+            - kafka1.-DomainForReplace-:9192
+            - kafka2.-DomainForReplace-:9292
+            - kafka3.-DomainForReplace-:9392
+    Organizations:
+Application: &ApplicationDefaults
+    Organizations:
+
+
+Profiles:
+    ProjectOrgsOrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+        Consortiums:
+            KafkaConsortium:
+                Organizations:
+                    #######List-Start
+                    - *-OrgIDForReplace-
+    #######List-End
+    ProjectOrgsChannel:
+        Consortium: KafkaConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                #######List-Start
+                - *-OrgIDForReplace-
+#######List-End
+

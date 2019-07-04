@@ -1,0 +1,19 @@
+version: '2'
+
+networks:
+  default:
+
+services:
+
+  -ContainerIdForReplace-:
+    container_name: -ContainerIdForReplace-
+    image: hyperledger/fabric-couchdb
+    privileged: true
+    environment:
+      - GODEBUG=netdns=go
+      - COUCHDB_USER=-CouchUserForReplace-
+      - COUCHDB_PASSWORD=-CouchPasswordForReplace-
+    ports:
+      - -CouchPortForReplace-:5984
+    networks:
+      - default  

@@ -1,0 +1,11 @@
+PeerOrgs:
+  - Name: -OrgIDForReplace-
+    Domain: -OrgIDForReplace-.-DomainForReplace-
+    CA:
+       Hostname: ca
+    Template:
+      Count: 2
+      SANS:
+        - -CAIpForReplace-
+    Users:
+      Count: 1

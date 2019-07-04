@@ -1,0 +1,29 @@
+version: '2'
+
+networks:
+  default:
+
+services:
+
+  -ContainerIdForReplace-:
+    image: hyperledger/fabric-ca
+    privileged: true
+    environment:
+      - GODEBUG=netdns=go
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=-ContainerIdForReplace-
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/-OrgCAIDForReplace-.-OrgIDForReplace-.-DomainForReplace--cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/-CAPEMFILENAMEForReplace-
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/-OrgCAIDForReplace-.-OrgIDForReplace-.-DomainForReplace--cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/-CAPEMFILENAMEForReplace-
+      - FABRIC_CA_SERVER_PORT=-OrgCAPortForReplace-
+    ports:
+      - -OrgCAPortForReplace-:-OrgCAPortForReplace-
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - -CAPATHForReplace-:/etc/hyperledger/fabric-ca-server-config
+    container_name: -ContainerIdForReplace-
+    networks:
+      - default
+      

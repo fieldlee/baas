@@ -1,0 +1,36 @@
+version: '2'
+
+networks:
+  default:
+
+services:
+
+  -OrgIDForReplace-cli:
+    container_name: -OrgIDForReplace-cli
+    image: hyperledger/fabric-tools
+    privileged: true
+    stdin_open: true
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_TLS_ENABLED=True
+      - CORE_PEER_ID=-OrgIDForReplace-cli
+      - CORE_PEER_ADDRESS=peer0.-OrgIDForReplace-.-DomainForReplace-:7051
+      - CORE_PEER_LOCALMSPID=-OrgIDForReplace-
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/-OrgIDForReplace-.-DomainForReplace-/peers/peer0.-OrgIDForReplace-.-DomainForReplace-/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/-OrgIDForReplace-.-DomainForReplace-/peers/peer0.-OrgIDForReplace-.-DomainForReplace-/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/-OrgIDForReplace-.-DomainForReplace-/peers/peer0.-OrgIDForReplace-.-DomainForReplace-/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/-OrgIDForReplace-.-DomainForReplace-/users/Admin@-OrgIDForReplace-.-DomainForReplace-/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash -c 'sleep 10000'
+    volumes:
+        - /var/run/:/host/var/run/
+        - -CryptoPathForReplace-:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+#    depends_on:
+#      - peer0.-OrgIDForReplace-.-DomainForReplace-
+    extra_hosts:
+      - -OrderDomainForReplace-:-OrderIPForReplace-
+    networks:
+      - default

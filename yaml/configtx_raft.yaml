@@ -1,0 +1,175 @@
+
+
+Organizations:
+
+    - &OrdererOrg
+        Name: -OrderIDForReplace-
+        ID: -OrderIDForReplace-
+        MSPDir: -ProjectDIR-/crypto-config/ordererOrganizations/-DomainForReplace-/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('-OrderIDForReplace-.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('-OrderIDForReplace-.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('-OrderIDForReplace-.admin')"
+#######List-Start
+    - &-OrgIDForReplace-
+        Name: -OrgIDForReplace-
+        ID: -OrgIDForReplace-
+        MSPDir: -ProjectDIR-/crypto-config/peerOrganizations/-OrgIDForReplace-.-DomainForReplace-/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('-OrgIDForReplace-.admin', '-OrgIDForReplace-.peer', '-OrgIDForReplace-.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('-OrgIDForReplace-.admin', '-OrgIDForReplace-.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('-OrgIDForReplace-.admin')"
+        AnchorPeers:
+            - Host: -AnchorIpForReplace-
+              Port: -AnchorPortForReplace-
+#######List-End
+
+Capabilities:
+    Channel: &ChannelCapabilities
+        V1_3: true
+    Orderer: &OrdererCapabilities
+        V1_1: true
+    Application: &ApplicationCapabilities
+        V1_3: true
+        V1_2: false
+        V1_1: false
+
+Application: &ApplicationDefaults
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+
+    OrdererType: solo
+
+    Addresses:
+#######OrderList-Start
+      - -OrderIDForReplace-.-DomainForReplace-:-OrderPortForReplace-
+#######OrderList-End
+
+    BatchTimeout: 4s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+
+    Kafka:
+        Brokers:
+            - 127.0.0.1:9092
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+Channel: &ChannelDefaults
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+    Capabilities:
+        <<: *ChannelCapabilities
+
+Profiles:
+    ProjectOrgsOrdererGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+#######List-Start
+                    - *-OrgIDForReplace-
+#######List-End
+
+    ProjectOrgsChannel:
+        Consortium: SampleConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+#######List-Start
+              - *-OrgIDForReplace-
+#######List-End
+            Capabilities:
+                <<: *ApplicationCapabilities
+
+    SampleMultiNodeEtcdRaft:
+        <<: *ChannelDefaults
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            OrdererType: etcdraft
+            EtcdRaft:
+                Consenters:
+#######OrderList-Start
+                    - Host: -OrderIDForReplace-.-DomainForReplace-
+                      Port: 7050
+                      ClientTLSCert: -ProjectDIR-/crypto-config/ordererOrganizations/-DomainForReplace-/orderers/-OrderIDForReplace-.-DomainForReplace-/tls/server.crt
+                      ServerTLSCert: -ProjectDIR-/crypto-config/ordererOrganizations/-DomainForReplace-/orderers/-OrderIDForReplace-.-DomainForReplace-/tls/server.crt
+#######OrderList-End
+
+            Addresses:
+#######OrderList-Start
+                - -OrderIDForReplace-.-DomainForReplace-:7050
+#######OrderList-End
+
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - <<: *OrdererOrg
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+#######List-Start
+                  - *-OrgIDForReplace-
+#######List-End
+

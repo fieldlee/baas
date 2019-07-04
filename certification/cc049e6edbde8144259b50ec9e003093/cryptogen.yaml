@@ -1,0 +1,34 @@
+OrdererOrgs:
+  - Name: order
+    Domain: 51mm.com
+    Specs:
+#######OrderList-Start
+      - Hostname: order0
+#######OrderList-End
+PeerOrgs: #######
+#######List-Start
+  - Name: mmOrg
+    Domain: mmOrg.51mm.com
+    EnableNodeOUs: true
+    CA:
+       Hostname: ca
+    Template:
+      Count: 2
+      SANS:
+        - -CAIpForReplace-
+    Users:
+      Count: 1
+#######List-End
+#######List-Start
+  - Name: oneOrg
+    Domain: oneOrg.51mm.com
+    EnableNodeOUs: true
+    CA:
+       Hostname: ca
+    Template:
+      Count: 2
+      SANS:
+        - -CAIpForReplace-
+    Users:
+      Count: 1
+#######List-End
