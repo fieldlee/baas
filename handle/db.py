@@ -32,7 +32,7 @@ def QueryById(db,id):
         "selector": {
             "_id": id
         },
-        "fields": ["_id", "_rev", "domain", "consensus", "orders", "orgs","ordername","orderid"]
+        "fields": ["_id", "_rev", "domain", "consensus", "orders", "orgs","ordername","orderid","channel"]
     }
     doc = {}
     for row in db.find(selectorById):

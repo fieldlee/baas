@@ -140,6 +140,52 @@ def ReplacePeerYaml(line,peer,org,doc):
 
     return newline
 
+def ReplaceCouch(line,peer,org,doc):
+    newline = line
+    curPath = os.path.abspath(os.curdir)
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+    # -ContainerIdForReplace-
+    # -CouchUserForReplace-
+    # -CouchPasswordForReplace-
+    # -CouchPortForReplace-
+    newline = newline.replace("-ContainerIdForReplace-", peer["CouchContainerId"])
+    newline = newline.replace("-CouchUserForReplace-", peer["couchUsername"])
+    newline = newline.replace("-CouchPasswordForReplace-", peer["couchPassword"])
+    newline = newline.replace("-CouchPortForReplace-", str(peer["couchPort"]))
+    return newline
+
+def ReplaceCa(line,org,doc):
+    newline = line
+    curPath = os.path.abspath(os.curdir)
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+    # -ContainerIdForReplace-
+    # -OrgCAIDForReplace-
+    # -OrgIDForReplace-
+    # -DomainForReplace-
+    # -CAPEMFILENAMEForReplace-
+    # -OrgCAPortForReplace-
+    # -CAPATHForReplace-
+    newline = newline.replace("-ContainerIdForReplace-", org["ContainerId"])
+    newline = newline.replace("-OrgCAIDForReplace-", "ca")
+    newline = newline.replace("-OrgCAPortForReplace-", str(org["caPort"]))
+    newline = newline.replace("-OrgIDForReplace-", org["orgId"])
+    newline = newline.replace("-DomainForReplace-", doc["domain"])
+
+    caCertFilePath = os.path.join(toPath,"crypto-config","peerOrganizations","%s.%s"%(org["orgId"],doc["domain"]),"ca")
+
+    files = os.listdir(caCertFilePath)
+
+    caSkPath = ""
+    for file in files:
+        if "_sk" in file:
+            caSkPath = os.path.join(caCertFilePath,file)
+
+    newline = newline.replace("-CAPATHForReplace-", caCertFilePath)
+    newline = newline.replace("-CAPEMFILENAMEForReplace-", caSkPath)
+
+
+    return newline
+
 def GenerateConfigtx(doc):
     curPath = os.path.abspath(os.curdir)
     yamlDemo = os.path.join(curPath,"yaml","configtx_solo.yaml")
@@ -182,7 +228,6 @@ def GenerateConfigtx(doc):
         finally:
             file.close()
 
-
 def GenerateCrypto(doc):
     curPath = os.path.abspath(os.curdir)
     yamlDemo = os.path.join(curPath, "yaml", "cryptogen.yaml")
@@ -223,7 +268,6 @@ def GenerateCrypto(doc):
         finally:
             file.close()
 
-
 def GenerateOrder(doc):
     curPath = os.path.abspath(os.curdir)
     yamlDemo = os.path.join(curPath, "yaml", "order_demo.yaml")
@@ -247,7 +291,6 @@ def GenerateOrder(doc):
                         break
             finally:
                 file.close()
-
 
 def GeneratePeer(doc):
     curPath = os.path.abspath(os.curdir)
@@ -292,3 +335,84 @@ def GeneratePeer(doc):
                             break
                 finally:
                     file.close()
+
+def GenerateCouch(doc):
+    curPath = os.path.abspath(os.curdir)
+    yamlDemo = os.path.join(curPath, "yaml", "couch_demo.yaml")
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+
+    # 生成order yaml文件
+    for org in doc["orgs"]:
+        for peer in org["peers"]:
+            if "joinCouch" in peer :
+                toYamlPath = os.path.join(toPath, "couch_%s_%s.yaml" % (peer["peerId"],org["orgId"]))
+                # 创建yaml文件
+                CreateFile(toYamlPath)
+
+                file = open(yamlDemo, 'r')
+
+                with open(toYamlPath, 'w') as tofile:
+                    try:
+                        while True:
+                            text_line = file.readline()
+                            if text_line:
+                                tofile.write(ReplaceCouch(text_line, peer, org, doc))
+                            else:
+                                break
+                    finally:
+                        file.close()
+
+def GenerateCa(doc):
+    curPath = os.path.abspath(os.curdir)
+    yamlDemo = os.path.join(curPath, "yaml", "ca_demo.yaml")
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+
+    # 生成order yaml文件
+    for org in doc["orgs"]:
+        toYamlPath = os.path.join(toPath, "ca_%s.yaml" % (org["orgId"]))
+        # 创建yaml文件
+        CreateFile(toYamlPath)
+        file = open(yamlDemo, 'r')
+        with open(toYamlPath, 'w') as tofile:
+            try:
+                while True:
+                    text_line = file.readline()
+                    if text_line:
+                        tofile.write(ReplaceCa(text_line, org, doc))
+                    else:
+                        break
+            finally:
+                file.close()
+
+def GenerateCert(doc):
+
+    curPath = os.path.abspath(os.curdir)
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+    configPath = os.path.join(curPath, "certification", doc["_id"],"crypto-config")
+    #创建目录
+    CreateDir(configPath)
+    #crypto-config
+    #export FABRIC_CFG_PATH=$PWD
+    #../cryptogen generate --config=./cryptogen.yaml
+    #../configtxgen -profile ProjectOrgsOrdererGenesis -outputBlock ./genesis.block
+    #../configtxgen -profile SampleMultiNodeEtcdRaft -outputBlock ./genesis.block
+    #; ../configtxgen -profile ProjectOrgsChannel -outputCreateChannelTx ./.tx", " -channelID
+    commandLine = "cd %s; export FABRIC_CFG_PATH=$PWD;../cryptogen generate --config=./cryptogen.yaml;"%toPath
+    if doc["consensus"] == "raft":
+        commandLine += "../configtxgen -profile SampleMultiNodeEtcdRaft -outputBlock ./genesis.block;"
+    elif doc["consensus"] == "solo":
+        commandLine += "../configtxgen -profile ProjectOrgsOrdererGenesis -outputBlock ./genesis.block;"
+    else:
+        commandLine += "../configtxgen -profile ProjectOrgsOrdererGenesis -outputBlock ./genesis.block;"
+
+    # commandLine += "../configtxgen -profile ProjectOrgsChannel -outputCreateChannelTx ./%s.tx -channelID %s;"%(channelid,channelid)
+    # print(commandLine)
+    os.system(commandLine)
+
+def Tar(doc):
+    curPath = os.path.abspath(os.curdir)
+    rootPath = os.path.join(curPath, "certification")
+    gizShell = "cd %s; tar -cvf %s.tar ./%s ;"%(rootPath,doc["_id"],doc["_id"])
+    os.system(gizShell)
+
+
