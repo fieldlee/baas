@@ -86,7 +86,6 @@ class UpEnv(Resource):
         loop.close()
         return jsonify({"success":True})
 
-
 class Channel(Resource):
     def post(self):
         # commandLine += "../configtxgen -profile ProjectOrgsChannel -outputCreateChannelTx ./%s.tx -channelID %s;" % (
@@ -119,6 +118,26 @@ class Channel(Resource):
         doc["channel"] = chanlist
         db.save(doc)
 
+        #send channel tx file
+        chanTxFile = os.path.join(toPath,"%s.tx"%channelid)
+        files = {'file': open(chanTxFile, 'rb')}
+        #生成api服务
+        api = doc["apiip"]
+
+
+        tasks = [postCommand("http://%s/"%api,files)]
+        # 启动docker环境
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(asyncio.wait(tasks))
+        loop.close()
         #return
         return jsonify({"success":True})
+
+class ApiGene(Resource):
+    def post(self):
+        args = parser.parse_args()
+        id = args["id"]
+        doc = db.QueryById(Couchdb, id)
+        untils.GenerateApiJson(doc)
+
 

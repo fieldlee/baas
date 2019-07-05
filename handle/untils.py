@@ -1,5 +1,6 @@
 
 import os
+import json
 
 def CreateDir(path):
     if not os.path.exists(path):
@@ -415,4 +416,133 @@ def Tar(doc):
     gizShell = "cd %s; tar -cvf %s.tar ./%s ;"%(rootPath,doc["_id"],doc["_id"])
     os.system(gizShell)
 
+
+def GenerateApiJson(doc):
+    print(doc["_id"])
+    ProPath = os.path.join("var","certification",doc["_id"])
+
+    Json = {}
+    Json["host"]="localhost"
+    Json["port"] = "4000"
+    Json["curOrgId"] = ""
+    Json["orderId"] = doc["orderid"]
+    Json["consensus"] = doc["consensus"]
+    Json["caUser"] = "admin"
+    Json["caSecret"] = "adminpw"
+    Json["ccSrcPath"] = os.path.join(ProPath,"cc")
+    Json["caUser"] = "admin"
+    Json["eventWaitTime"] = "100000"
+    Json["expireTime"] = "360000"
+    Json["jwt_expiretime"] = "360000"
+    Json["keyValueStore"] = "/var/fabric-client-kvs"
+
+    # network-config
+    tmpConfig = {}
+    for org in doc["orgs"]:
+
+        tmpLIne = "{\"client\":{\"credentialStore\":{\"cryptoStore\":{\"path\":\"/var/fabric-client-kvs_%s\"}," \
+                  "\"path\":\"/var/fabric-client-kvs_%s\"}," \
+                  "\"organization\":\"%s\"},\"version\":\"1.0\"}"%(org["orgId"],org["orgId"],org["orgId"])
+        tmpConfig[org["orgId"]] = json.loads(tmpLIne)
+
+    Json["network-config"] = tmpConfig
+
+
+
+
+    tmpProfile = {}
+
+    # channel
+    tmpChan = {}
+    chanmap = {}
+    for chan in doc["channel"]:
+        tmpOrderList = []
+        for order in doc["orders"]:
+            tmpOrderList.append(order["containerId"])
+
+        tmpChan["orderers"] = tmpOrderList
+
+
+        tmpPeerMap = {}
+        for org in doc["orgs"]:
+            for peer in org["peers"]:
+                if "peer0" in peer["peerId"]:
+                    tmpPeerMap[peer["ContainerId"]] = {"chaincodeQuery": True,"endorsingPeer":True,"eventSource":True,"ledgerQuery":True}
+                else:
+                    tmpPeerMap[peer["ContainerId"]] = {"chaincodeQuery": True, "endorsingPeer": False,"eventSource": False, "ledgerQuery": True}
+        tmpChan["peers"] = tmpPeerMap
+        chanmap[chan["channelid"]] = tmpChan
+
+    # channels 赋值
+    tmpProfile["channels"] = chanmap
+
+    # certificateAuthorities
+    tmpCert = {}
+    for org in doc["orgs"]:
+        tmpLIne = "{\"caName\":\"%s\",\"httpOptions\":{\"verify\":false},\"registrar\":[" \
+                  "{\"enrollId\":\"%s\",\"enrollSecret\":\"%s\"}],\"tlsCACerts\":" \
+                  "{\"path\":\"/var/certification/%s/crypto-config/peerOrganizations/%s.%s/ca/ca.%s.%s-cert.pem\"}," \
+                  "\"url\":\"https://%s:%s\"}"%(org["ContainerId"],org["caUser"],org["caPwd"],doc["_id"],org["orgId"],doc["domain"],org["orgId"],doc["domain"],org["caIp"],str(org["caPort"]))
+
+        tmpCert[org["ContainerId"]] = json.loads(tmpLIne)
+
+    tmpProfile["certificateAuthorities"] = tmpCert
+    #orders
+
+    tmpOrder = {}
+    for order in doc["orders"]:
+        tmpLIne = "{\"grpcOptions\":{\"ssl-target-name-override\":\"%s\"}," \
+                  "\"tlsCACerts\":{\"path\":\"/var/certification/%s/crypto-config/ordererOrganizations/%s/orderers/%s/tls/ca.crt\"}," \
+                  "\"url\":\"grpcs://%s:%s\"}"%(order["containerId"],doc["_id"],doc["domain"],order["containerId"],order["orderIp"],str(order["orderPort"]))
+
+        tmpOrder[order["containerId"]] = json.loads(tmpLIne)
+
+    tmpProfile["orderers"] = tmpOrder
+    #peers
+    tmpPeers = {}
+    for org in doc["orgs"]:
+        for peer in org["peers"]:
+            tmpLIne = "{\"eventUrl\":\"grpcs://%s:%s\",\"grpcOptions\":{\"ssl-target-name-override\":" \
+                      "\"%s\"},\"tlsCACerts\":{\"path\":\"/var/certification/%s/crypto-config/peerOrganizations/%s.%s/peers/%s/tls/ca.crt\"}," \
+                      "\"url\":\"grpcs://%s:%s\"}"%(peer["peerIp"],str(peer["eventPort"]),peer["ContainerId"],doc["_id"],org["orgId"],doc["domain"],peer["ContainerId"],peer["peerIp"],str(peer["postPort"]))
+            tmpPeers[peer["ContainerId"]] = json.loads(tmpLIne)
+
+    tmpProfile["peers"] = tmpPeers
+
+    #orgnzation
+    tmpOrgs = {}
+    curPath = os.path.abspath(os.curdir)
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+    for org in doc["orgs"]:
+
+        caCertFilePath = os.path.join(toPath, "crypto-config", "peerOrganizations","%s.%s" % (org["orgId"], doc["domain"]), "ca")
+
+        files = os.listdir(caCertFilePath)
+
+        caSkfile = ""
+        for file in files:
+            if "_sk" in file:
+                caSkfile = file
+
+        comLIne = "%s.%s"%(org["orgId"],doc["domain"])
+        peer0 = "peer0.%s"%comLIne
+        peer1 = "peer1.%s"%comLIne
+        tmpLIne = "{\"adminPrivateKey\":{\"path\":\"/var/certification/%s/crypto-config/peerOrganizations/%s/users/Admin@%s/msp/keystore/%s\"}," \
+                  "\"certificateAuthorities\":" \
+                  "[\"%s\"],\"mspid\":\"%s\",\"peers\":[\"%s\",\"%s\"]," \
+                  "\"signedCert\":" \
+                  "{\"path\":\"/var/certification/%s/crypto-config/peerOrganizations/%s/users/Admin@%s/msp/signcerts/Admin@%s-cert.pem\"}}"%(doc["_id"],comLIne,comLIne,caSkfile,org["ContainerId"],org["orgId"],peer0,peer1,doc["_id"],comLIne,comLIne,comLIne)
+
+        tmpOrgs[org["orgId"]] = json.loads(tmpLIne)
+
+    tmpProfile["organizations"] = tmpOrgs
+    tmpProfile["version"] = "1.0"
+    Json["connect_profile"] = tmpProfile
+
+    curPath = os.path.abspath(os.curdir)
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+    # 保持json config文件
+    jsonFile = os.path.join(toPath,"config.json")
+    with open(jsonFile,'w') as jFile:
+        jFile.write(json.dumps(Json))
 

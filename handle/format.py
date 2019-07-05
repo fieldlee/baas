@@ -16,6 +16,7 @@ class Format(Resource):
         orders = args["orders"]
         orgs = args["orgs"]
 
+        apiIP = ""
 
         orderList = []
         i = 0
@@ -24,7 +25,7 @@ class Format(Resource):
         for order in orders:
             if tmpip == "":
                 tmpip = order["orderIp"]
-
+                apiIP = order["orderIp"]
             tmpOrder = {}
             tmpOrder["orderName"] = "order%s"%i
             tmpOrder["orderId"] = "order%s"%i
@@ -94,7 +95,7 @@ class Format(Resource):
             orgList.append(tmpOrg)
 
         try:
-            db.save({"domain":domain,"consensus":consensus,"ordername":"order","orderid":"order","orders":orderList,"orgs":orgList})
+            db.save({"domain":domain,"consensus":consensus,"apiip":apiIP,"ordername":"order","orderid":"order","orders":orderList,"orgs":orgList})
         except:
             return jsonify({"success":False})
 
