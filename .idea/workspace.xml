@@ -2,20 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="de87a041-5c1b-4925-a148-67dcbb94c578" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/envc.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/handle/clone.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/handle/install.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handle/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/handle/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handle/format.py" beforeDir="false" afterPath="$PROJECT_DIR$/handle/format.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handle/generate.py" beforeDir="false" afterPath="$PROJECT_DIR$/handle/generate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handle/untils.py" beforeDir="false" afterPath="$PROJECT_DIR$/handle/untils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handle/upenv.py" beforeDir="false" afterPath="$PROJECT_DIR$/handle/upenv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yaml/ca_demo.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/yaml/ca_demo.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yaml/order_demo.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/yaml/order_demo.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yaml/peer_demo.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/yaml/peer_demo.yaml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,8 +15,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+            <state relative-caret-position="440">
+              <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -40,8 +27,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/handle/install.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="9" selection-start-column="9" selection-end-column="9" />
+            <state relative-caret-position="132">
+              <caret line="6" selection-start-line="6" selection-end-line="11" selection-end-column="27" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -137,9 +127,9 @@
         <option value="$PROJECT_DIR$/handle/upenv.py" />
         <option value="$PROJECT_DIR$/handle/clone.py" />
         <option value="$PROJECT_DIR$/handle/untils.py" />
-        <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/handle/install.py" />
+        <option value="$PROJECT_DIR$/app.py" />
       </list>
     </option>
   </component>
@@ -245,13 +235,13 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32897604" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.28979144" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.28979144" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.33369923" />
+      <window_info anchor="bottom" id="Terminal" order="8" visible="true" weight="0.33369923" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -462,16 +452,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/handle/generate.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="242">
@@ -510,10 +490,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/handle/install.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="9" selection-start-column="9" selection-end-column="9" />
+        <state relative-caret-position="132">
+          <caret line="6" selection-start-line="6" selection-end-line="11" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

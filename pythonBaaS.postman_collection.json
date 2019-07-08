@@ -1,0 +1,240 @@
+{
+	"info": {
+		"_postman_id": "63308690-7816-4efb-8d5b-92d38afb5612",
+		"name": "testPythonBaaS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "python_save",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"domain\":\"51mm.com\",\r\n  \"channel\":\"mmchannel\",\r\n  \"orders\":[\r\n  \t\t{\r\n  \t\t\"orderIp\":\"192.168.0.203\"\r\n  \t\t},\r\n  \t\t{\r\n  \t\t\"orderIp\":\"192.168.0.203\"\r\n  \t\t}\r\n  \t],\r\n  \"orgs\":[\r\n  \t\t{\r\n  \t\t\t\"orgId\":\"mmOrg\",\r\n  \t\t\t\"peers\":[\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.0.203\"\r\n  \t\t\t\t},\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.0.203\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t}\r\n  \t\t\t]\r\n  \t\t},\r\n  \t\t{\r\n  \t\t\t\"orgId\":\"oneOrg\",\r\n  \t\t\t\"peers\":[\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.0.203\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t},\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.0.203\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t}\r\n  \t\t\t]\r\n  \t\t}\r\n  \t]\r\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/save",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"save"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_generate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/generate",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"generate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_up",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/up",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_api",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/api",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"api"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_channel",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\",\n\t\"channel\":\"mmchannel\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/channel",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"channel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_clone",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\",\n\t\"cc\":\"https://github.com/fieldlee/aledger.git\",\n\t\"sdk\":\"https://github.com/fieldlee/fabricSdk1.4.git\",\n\t\"ccname\":\"ledger\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/clone",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"clone"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_code",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\",\n\t\"channel\":\"mmchannel\",\n\t\"ccname\":\"ledger\",\n\t\"ccversion\":\"v1.0\",\n\t\"ccpath\":\"\",\n\t\"type\":\"install\"\n}\n"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/code",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"code"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
