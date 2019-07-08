@@ -2,7 +2,7 @@ import os
 from flask_restful import Resource,reqparse
 from flask import jsonify
 import asyncio,aiohttp
-from . import Couchdb,db,untils
+from . import Couchdb,db,untils,SyncPort
 
 
 parser = reqparse.RequestParser(trim=True)
@@ -33,8 +33,8 @@ class UpEnv(Resource):
 
         #生成启动命令
         # docker ps - a - -filter name = 'mysql'
-        command = "docker stop $(docker ps -q  --filter name='%s');"% doc["domain"]
-        command += "docker rm $(docker ps -q  --filter name='%s');"% doc["domain"]
+        command = "docker stop $(docker ps -aq  --filter name='%s');"% doc["domain"]
+        command += "docker rm $(docker ps -aq  --filter name='%s');"% doc["domain"]
 
         commandMap = {}
 
@@ -70,18 +70,17 @@ class UpEnv(Resource):
         for ip in ipList:
             # docker-compose %s up - d
             fline = ""
-            print(commandMap)
             for yfile in commandMap[ip]:
                 fline += " -f %s "%yfile
 
-            dockerstr = "%s docker-compose %s up -d;"%(command,fline)
-            print(dockerstr)
-            url = "http://%s/upenv"%ip
-            tasks.append(postCommand(url,data=dockerstr))
+            certpath = os.path.join('/var','certification',id)
+            dockerstr = "cd %s ; %s docker-compose %s up -d;"%(certpath,command,fline)
+            url = "http://%s:%s/runcom"%(ip,str(SyncPort))
+            data = {'command':dockerstr}
+            tasks.append(postCommand(url,data=data))
 
         #启动docker环境
-        loop = asyncio.get_event_loop()
-
+        loop = asyncio.new_event_loop()
         loop.run_until_complete(asyncio.wait(tasks))
         loop.close()
         return jsonify({"success":True})
@@ -110,24 +109,25 @@ class Channel(Resource):
 
         curPath = os.path.abspath(os.curdir)
         toPath = os.path.join(curPath, "certification", doc["_id"])
-        commandline = "cd % s; export FABRIC_CFG_PATH =$PWD; ../configtxgen -profile ProjectOrgsChannel -outputCreateChannelTx ./%s.tx -channelID %s;"%(toPath,channelid,channelid)
+        # export FABRIC_CFG_PATH =$PWD;
+        commandline = "cd %s;  ../configtxgen -profile ProjectOrgsChannel -outputCreateChannelTx ./%s.tx -channelID %s;"%(toPath,channelid,channelid)
+        print(commandline)
         os.system(commandline)
 
         #save doc
         chanlist.append(channel)
         doc["channel"] = chanlist
-        db.save(doc)
+        Couchdb.save(doc)
 
         #send channel tx file
         chanTxFile = os.path.join(toPath,"%s.tx"%channelid)
-        files = {'file': open(chanTxFile, 'rb')}
+        files = {'file': open(chanTxFile, 'rb'),'id':doc["_id"]}
         #生成api服务
         api = doc["apiip"]
-
-
-        tasks = [postCommand("http://%s/"%api,files)]
+        #生成tasks list
+        tasks = [postCommand("http://%s:%s/uptx"%(api,str(SyncPort)),files)]
         # 启动docker环境
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         loop.run_until_complete(asyncio.wait(tasks))
         loop.close()
         #return
@@ -139,5 +139,20 @@ class ApiGene(Resource):
         id = args["id"]
         doc = db.QueryById(Couchdb, id)
         untils.GenerateApiJson(doc)
+        # 生成tasks list
+        # 生成api服务
+        api = doc["apiip"]
+
+        curpath = os.path.abspath(os.curdir)
+        configfile = os.path.join(curpath,"certification", doc["_id"],'config.json')
+        files = {'file': open(configfile, 'rb')}
+
+        tasks = [postCommand("http://%s:%s/upconfig" % (api, str(SyncPort)), files)]
+        # 启动docker环境
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(asyncio.wait(tasks))
+        loop.close()
+        # return
+        return jsonify({"success": True})
 
 

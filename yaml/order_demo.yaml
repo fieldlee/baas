@@ -38,7 +38,7 @@ services:
       - -ProjectDIR-/crypto-config:/etc/hyperledger/fabric/crypto
       - -ProjectDIR-/crypto-config/ordererOrganizations/-DomainForReplace-/orderers/-OrderIDForReplace-.-DomainForReplace-/msp:/etc/hyperledger/crypto/orderer/msp
       - -ProjectDIR-/crypto-config/ordererOrganizations/-DomainForReplace-/orderers/-OrderIDForReplace-.-DomainForReplace-/tls:/etc/hyperledger/crypto/orderer/tls
-      - -ContainerIdForReplace-:/etc/hyperledger/production/orderer
+
 
     networks:
       - default

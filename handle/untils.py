@@ -10,7 +10,6 @@ def CreateFile(path):
     if not os.path.exists(path):
         os.mknod(path,mode=0o777)
 
-
 def ReplaceYaml(line,doc):
     newline = line
 
@@ -179,8 +178,9 @@ def ReplaceCa(line,org,doc):
     caSkPath = ""
     for file in files:
         if "_sk" in file:
-            caSkPath = os.path.join(caCertFilePath,file)
+            caSkPath = file
 
+    caCertFilePath = caCertFilePath.replace(curPath,'/var')
     newline = newline.replace("-CAPATHForReplace-", caCertFilePath)
     newline = newline.replace("-CAPEMFILENAMEForReplace-", caSkPath)
 
@@ -416,7 +416,6 @@ def Tar(doc):
     gizShell = "cd %s; tar -cvf %s.tar ./%s ;"%(rootPath,doc["_id"],doc["_id"])
     os.system(gizShell)
 
-
 def GenerateApiJson(doc):
     print(doc["_id"])
     ProPath = os.path.join("var","certification",doc["_id"])
@@ -545,4 +544,15 @@ def GenerateApiJson(doc):
     jsonFile = os.path.join(toPath,"config.json")
     with open(jsonFile,'w') as jFile:
         jFile.write(json.dumps(Json))
+
+
+def RemoveFloder(top):
+    for root, dirs, files in os.walk(top, topdown=False):
+        for name in files:
+            os.remove(os.path.join(root, name))
+
+        for name in dirs:
+            os.rmdir(os.path.join(root, name))
+
+        os.rmdir(root)
 

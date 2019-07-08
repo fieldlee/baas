@@ -1,12 +1,21 @@
 import os
+import aiohttp
 from flask_restful import Resource,reqparse
 from flask import jsonify
 import asyncio
-from . import Couchdb,db,untils
+from . import Couchdb,db,untils,SyncPort
 
 
 parser = reqparse.RequestParser(trim=True)
 parser.add_argument("id")
+
+async def aiohttp_post(url,path,filename):
+    async with aiohttp.ClientSession() as session:
+        data = aiohttp.FormData()
+        data.add_field(name='file',value=open(path,'rb'),filename=filename,content_type='image/jpeg')
+        # files = {'file':open(path,'rb')}
+        async with session.post(url,data=data) as resp:
+            print(await resp.text())
 
 
 
@@ -39,13 +48,36 @@ class Generate(Resource):
 
         #生成
         untils.Tar(doc)
-        #send tar文件到各个服务器
-        loop = asyncio.get_event_loop()
+
         #wait to send file 各个服务器
 
         tasks = []
+        ipList = []
+        for order in doc['orders']:
+            if not order["orderIp"] in ipList:
+                ipList.append(order["orderIp"])
+
+        for org in doc['orgs']:
+            for peer in org['peers']:
+                if not peer['peerIp'] in ipList:
+                    ipList.append(peer['peerIp'])
+
+        # 生成tasks list
+        print(ipList)
+        for ip in ipList:
+            tmpurl = 'http://%s:%s/upcert'%(ip,str(SyncPort))
+            curPath = os.path.abspath(os.curdir)
+            certpath = os.path.join(curPath, "certification", '%s.tar'%doc["_id"])
+            filename = '%s.tar'%doc["_id"]
+            tasks.append(aiohttp_post(tmpurl,path=certpath,filename=filename))
+
+        # send tar文件到各个服务器
+        loop = asyncio.new_event_loop()
         loop.run_until_complete(asyncio.wait(tasks))
         loop.close()
+
+        # loop = asyncio.new_event_loop()
+        # asyncio.set_event_loop(loop)
 
         return jsonify({"success":True})
 

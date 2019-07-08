@@ -43,7 +43,7 @@ services:
       - /var/run/:/host/var/run/
       - -ProjectDIR-/crypto-config/peerOrganizations/-OrgIDForReplace-.-DomainForReplace-/peers/-PeerIDForReplace-.-OrgIDForReplace-.-DomainForReplace-/msp:/etc/hyperledger/crypto/peer/msp
       - -ProjectDIR-/crypto-config/peerOrganizations/-OrgIDForReplace-.-DomainForReplace-/peers/-PeerIDForReplace-.-OrgIDForReplace-.-DomainForReplace-/tls:/etc/hyperledger/crypto/peer/tls
-      - -PeerIDForReplace-.-OrgIDForReplace-.-DomainForReplace-:/var/hyperledger/production
+
 
 #########OrderExtra_Start  
     extra_hosts:

@@ -81,7 +81,7 @@ class Format(Resource):
                         tmpPeer["joinCouch"] = True
                         tmpPeer["couchUsername"] = "couchadmin"
                         tmpPeer["couchPassword"] = "adminpwd"
-                        tmpPeer["couchPort"] = 5984 + 1000*ipOrgNum
+                        tmpPeer["couchPort"] = 6984 + 1000*ipOrgNum
                         tmpPeer["CouchContainerId"] = ("couch.%s"%tmpPeer["ContainerId"])
                 peerList.append(tmpPeer)
                 #计算ipOrgNUm
