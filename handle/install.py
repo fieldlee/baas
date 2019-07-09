@@ -18,6 +18,8 @@ class Install(Resource):
                 "echo \"Please Install jq https://stedolan.github.io/jq/ to execute this script\"" \
                 "exit 1" \
                 "fi"
+        #command 打印
+        print(command)
         args = parser.parse_args()
         id = args["id"]
         channelid = args["channel"]
@@ -33,18 +35,21 @@ class Install(Resource):
         for org in doc['orgs']:
             if defaultToken == "":
                 defaultToken = org['orgId']
-            loginShell += '%s_Token = $(curl - s - X POST http://localhost:4000/login -H "content-type:application/x-www-form-urlencoded"' \
+            loginShell += '%s_Token = $(curl - s - X POST http://localhost:4000/login  -H "content-type:application/x-www-form-urlencoded"' \
                           ' -d username=%s&password=password&orgname=%s'%(org['orgId'],org['orgId'],org['orgId'])
             loginShell += '%s_TOKEN=$(echo $%s_TOKEN | jq ".token" | sed "s/\"//g")' \
                           ''%(org['orgId'],org['orgId'])
-
+            #打印login
+            print(loginShell)
 
         channelTx = os.path.join('/var','certification',id,'%s.tx'%channelid)
         createChannel = "curl - s - X POST  http://localhost:4000/channels" \
-                        "-H \"authorization: Bearer $%s_TOKEN\"" \
-                        "-H \"content-type: application/json\"" \
-                        "-d {\"channelName\":\"%s\",\"channelConfigPath\":\"%s\"}" \
+                        " -H \"authorization: Bearer $%s_TOKEN\"" \
+                        " -H \"content-type: application/json\"" \
+                        " -d {\"channelName\":\"%s\",\"channelConfigPath\":\"%s\"}" \
                         ""%(defaultToken,channelid,channelTx)
+        print(createChannel)
+
         joinShell = ""
 
         installShell = ""
@@ -57,10 +62,11 @@ class Install(Resource):
                     peerstr += ",%s"%peer['ContainerId']
 
             joinShell += "curl -s -X POST http://localhost:4000/channels/peers" \
-                         "-H \"authorization: Bearer $%s_TOKEN\"" \
-                         "-H \"content-type: application/json\"" \
-                         "-d '{\"peers\": [%s],\"channelName\":\"%s\"}'" \
+                         " -H \"authorization: Bearer $%s_TOKEN\"" \
+                         " -H \"content-type: application/json\"" \
+                         " -d '{\"peers\": [%s],\"channelName\":\"%s\"}'" \
                          ""%(org["orgId"],peerstr,channelid)
+            print(joinShell)
 
 
         for org in doc['orgs']:
@@ -72,31 +78,33 @@ class Install(Resource):
                     peerstr += ",%s"%peer['ContainerId']
 
             installShell += "curl -s -X POST http://localhost:4000/chaincodes" \
-                            "-H \"authorization: Bearer $%s_TOKEN\"" \
-                            "-H \"content-type: application/json\"" \
-                            "-d {\"peers\": [%s],\"channelName\": \"%s\",\"chaincodeName\": \"%s\"," \
+                            " -H \"authorization: Bearer $%s_TOKEN\"" \
+                            " -H \"content-type: application/json\"" \
+                            " -d {\"peers\": [%s],\"channelName\": \"%s\",\"chaincodeName\": \"%s\"," \
                             "\"chaincodePath\": \"%s\",\"chaincodeVersion\": \"%s\"}" \
                             ""%(org["orgId"],peerstr,channelid,ccname,ccpath,ccversion)
+            print(installShell)
 
 
         instantiateChainCode = "curl -s -X POST http://localhost:4000/channels/chaincodes" \
-                               "-H \"authorization: Bearer $%s_TOKEN\"" \
-                               "-H \"content-type: application/json\"" \
-                               "-d {\"channelName\": \"%s\",\"chaincodeName\": \"%s\",\"chaincodeVersion\": \"%s\"," \
+                               " -H \"authorization: Bearer $%s_TOKEN\"" \
+                               " -H \"content-type: application/json\"" \
+                               " -d {\"channelName\": \"%s\",\"chaincodeName\": \"%s\",\"chaincodeVersion\": \"%s\"," \
                                "\"args\": []}" \
                                ""%(defaultToken,channelid,ccname,ccversion)
+        print(instantiateChainCode)
 
         upgradeChainCode = "curl -s -X PUT http://localhost:4000/channels/chaincodes" \
-                               "-H \"authorization: Bearer $%s_TOKEN\"" \
-                               "-H \"content-type: application/json\"" \
-                               "-d {\"channelName\": \"%s\",\"chaincodeName\": \"%s\",\"chaincodeVersion\": \"%s\"," \
+                               " -H \"authorization: Bearer $%s_TOKEN\"" \
+                               " -H \"content-type: application/json\"" \
+                               " -d {\"channelName\": \"%s\",\"chaincodeName\": \"%s\",\"chaincodeVersion\": \"%s\"," \
                                "\"args\": []}" \
                            "" % (defaultToken, channelid, ccname, ccversion)
         install = ""
         upgrade = ""
         if type == "install":
-            install = "%s %s %s %s %s "%(loginShell,createChannel,joinShell,installShell,instantiateChainCode)
+            install = "%s %s %s %s %s %s "%(command,loginShell,createChannel,joinShell,installShell,instantiateChainCode)
             return install
         else:
-            upgrade = "%s %s %s %s %s "%(loginShell,installShell,upgradeChainCode)
+            upgrade = "%s %s %s %s %s %s "%(command,loginShell,installShell,upgradeChainCode)
             return  upgrade
