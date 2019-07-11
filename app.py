@@ -1,10 +1,14 @@
 from flask import Flask
 from flask_restful import Api
+from flask_jsonrpc import JSONRPC
+from flask_httpauth import HTTPTokenAuth
 from handle import format,generate,upenv,clone,install
 
 
 baasApp = Flask(__name__)
 api = Api(baasApp)
+auth = HTTPTokenAuth()
+#jsonrpc = JSONRPC(baasApp, '/api', enable_web_browsable_api=False)
 
 #根据json 生成文档
 api.add_resource(format.Format,'/save')

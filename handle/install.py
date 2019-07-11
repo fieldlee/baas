@@ -13,11 +13,12 @@ parser.add_argument("type")
 
 class Install(Resource):
     def post(self):
-        command="jq --version > /dev/null 2>&1" \
-                "if [ $? -ne 0 ]; then" \
-                "echo \"Please Install jq https://stedolan.github.io/jq/ to execute this script\"" \
-                "exit 1" \
-                "fi"
+        command="#!/bin/bash \n" \
+                "jq --version > /dev/null 2>&1\n" \
+                "if [ $? -ne 0 ]; then\n" \
+                "   echo \"Please Install jq https://stedolan.github.io/jq/ to execute this script\"\n" \
+                "   exit 1\n" \
+                "fi\n"
         #command 打印
         print(command)
         args = parser.parse_args()
@@ -35,10 +36,10 @@ class Install(Resource):
         for org in doc['orgs']:
             if defaultToken == "":
                 defaultToken = org['orgId']
-            loginShell += '%s_Token = $(curl - s - X POST http://localhost:4000/login  -H "content-type:application/x-www-form-urlencoded"' \
-                          ' -d username=%s&password=password&orgname=%s'%(org['orgId'],org['orgId'],org['orgId'])
-            loginShell += '%s_TOKEN=$(echo $%s_TOKEN | jq ".token" | sed "s/\"//g")' \
-                          ''%(org['orgId'],org['orgId'])
+            loginShell += '%s_Token=$(curl - s - X POST http://localhost:4000/login  -H "content-type:application/x-www-form-urlencoded"' \
+                          ' -d username=%s&password=password&orgname=%s)\n'%(org['orgId'],org['orgId'],org['orgId'])
+            loginShell += '%s_TOKEN=$(echo $%s_TOKEN | jq ".token" | sed "s/\\"//g")' \
+                          '\n'%(org['orgId'],org['orgId'])
             #打印login
             print(loginShell)
 
@@ -46,8 +47,8 @@ class Install(Resource):
         createChannel = "curl - s - X POST  http://localhost:4000/channels" \
                         " -H \"authorization: Bearer $%s_TOKEN\"" \
                         " -H \"content-type: application/json\"" \
-                        " -d {\"channelName\":\"%s\",\"channelConfigPath\":\"%s\"}" \
-                        ""%(defaultToken,channelid,channelTx)
+                        " -d '{\"channelName\":\"%s\",\"channelConfigPath\":\"%s\"}'" \
+                        "\n"%(defaultToken,channelid,channelTx)
         print(createChannel)
 
         joinShell = ""
@@ -57,15 +58,15 @@ class Install(Resource):
             peerstr = ""
             for peer in org['peers']:
                 if peerstr == "":
-                    peerstr += peer['ContainerId']
+                    peerstr += "\"%s\""%peer['ContainerId']
                 else:
-                    peerstr += ",%s"%peer['ContainerId']
+                    peerstr += ",\"%s\""%peer['ContainerId']
 
             joinShell += "curl -s -X POST http://localhost:4000/channels/peers" \
                          " -H \"authorization: Bearer $%s_TOKEN\"" \
                          " -H \"content-type: application/json\"" \
                          " -d '{\"peers\": [%s],\"channelName\":\"%s\"}'" \
-                         ""%(org["orgId"],peerstr,channelid)
+                         "\n"%(org["orgId"],peerstr,channelid)
             print(joinShell)
 
 
@@ -73,38 +74,46 @@ class Install(Resource):
             peerstr = ""
             for peer in org['peers']:
                 if peerstr == "":
-                    peerstr += peer['ContainerId']
+                    peerstr += "\"%s\""%peer['ContainerId']
                 else:
-                    peerstr += ",%s"%peer['ContainerId']
+                    peerstr += ",\"%s\""%peer['ContainerId']
 
             installShell += "curl -s -X POST http://localhost:4000/chaincodes" \
                             " -H \"authorization: Bearer $%s_TOKEN\"" \
                             " -H \"content-type: application/json\"" \
-                            " -d {\"peers\": [%s],\"channelName\": \"%s\",\"chaincodeName\": \"%s\"," \
-                            "\"chaincodePath\": \"%s\",\"chaincodeVersion\": \"%s\"}" \
-                            ""%(org["orgId"],peerstr,channelid,ccname,ccpath,ccversion)
+                            " -d '{\"peers\": [%s],\"channelName\": \"%s\",\"chaincodeName\": \"%s\"," \
+                            "\"chaincodePath\": \"%s\",\"chaincodeVersion\": \"%s\"}'" \
+                            "\n"%(org["orgId"],peerstr,channelid,ccname,ccpath,ccversion)
             print(installShell)
 
 
         instantiateChainCode = "curl -s -X POST http://localhost:4000/channels/chaincodes" \
                                " -H \"authorization: Bearer $%s_TOKEN\"" \
                                " -H \"content-type: application/json\"" \
-                               " -d {\"channelName\": \"%s\",\"chaincodeName\": \"%s\",\"chaincodeVersion\": \"%s\"," \
-                               "\"args\": []}" \
-                               ""%(defaultToken,channelid,ccname,ccversion)
+                               " -d '{\"channelName\": \"%s\",\"chaincodeName\": \"%s\",\"chaincodeVersion\": \"%s\"," \
+                               "\"args\": []}'" \
+                               "\n"%(defaultToken,channelid,ccname,ccversion)
         print(instantiateChainCode)
 
         upgradeChainCode = "curl -s -X PUT http://localhost:4000/channels/chaincodes" \
                                " -H \"authorization: Bearer $%s_TOKEN\"" \
                                " -H \"content-type: application/json\"" \
-                               " -d {\"channelName\": \"%s\",\"chaincodeName\": \"%s\",\"chaincodeVersion\": \"%s\"," \
-                               "\"args\": []}" \
-                           "" % (defaultToken, channelid, ccname, ccversion)
+                               " -d '{\"channelName\": \"%s\",\"chaincodeName\": \"%s\",\"chaincodeVersion\": \"%s\"," \
+                               "\"args\": []}'" \
+                           "\n" % (defaultToken, channelid, ccname, ccversion)
         install = ""
         upgrade = ""
+
+        curPath = os.path.abspath(os.curdir)
+        shellPath = os.path.join(curPath, "certification",id,'install.sh')
+        updatePath = os.path.join(curPath, "certification", id, 'update.sh')
         if type == "install":
             install = "%s %s %s %s %s %s "%(command,loginShell,createChannel,joinShell,installShell,instantiateChainCode)
+            with open(shellPath,'w') as file:
+                file.write(install)
             return install
         else:
-            upgrade = "%s %s %s %s %s %s "%(command,loginShell,installShell,upgradeChainCode)
+            upgrade = "%s %s %s %s "%(command,loginShell,installShell,upgradeChainCode)
+            with open(updatePath,'w') as file:
+                file.write(upgrade)
             return  upgrade

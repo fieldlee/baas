@@ -60,7 +60,7 @@ def ReplaceOrderYaml(line,order,domain,docid):
     newline = line
 
     curPath = os.path.abspath(os.curdir)
-    toPath = os.path.join(curPath, "certification", docid)
+    toPath = os.path.join('/var', "certification", docid)
     # -OrderIDForReplace-
     # -OrderPortForReplace-
     newline = newline.replace("-ContainerIdForReplace-", order["containerId"])
@@ -75,8 +75,10 @@ def ReplacePeerYaml(line,peer,org,doc):
     domain = doc["domain"]
     curPath = os.path.abspath(os.curdir)
     toPath = os.path.join(curPath, "certification", doc["_id"])
-
+    projectPath = os.path.join('/var', "certification", doc["_id"])
     newline = line
+    #
+    newline = newline.replace("-NetWorkForReplace-",doc["_id"])
     #-ContainerIdForReplace-
     newline = newline.replace("-ContainerIdForReplace-", peer["ContainerId"])
     #-OrgIDForReplace-
@@ -100,7 +102,7 @@ def ReplacePeerYaml(line,peer,org,doc):
     newline = newline.replace("-OrgIDForReplace-", org["orgId"])
     newline = newline.replace("-DomainForReplace-", domain)
     #-ProjectDIR-
-    newline = newline.replace("-ProjectDIR-", toPath)
+    newline = newline.replace("-ProjectDIR-", projectPath)
     # -PeerIDForReplace-
     newline = newline.replace("-PeerIDForReplace-", peer["peerId"])
 
@@ -158,6 +160,7 @@ def ReplaceCa(line,org,doc):
     newline = line
     curPath = os.path.abspath(os.curdir)
     toPath = os.path.join(curPath, "certification", doc["_id"])
+    projectPath = os.path.join('/var', "certification", doc["_id"])
     # -ContainerIdForReplace-
     # -OrgCAIDForReplace-
     # -OrgIDForReplace-
@@ -191,6 +194,7 @@ def GenerateConfigtx(doc):
     curPath = os.path.abspath(os.curdir)
     yamlDemo = os.path.join(curPath,"yaml","configtx_solo.yaml")
     toPath = os.path.join(curPath,"certification",doc["_id"])
+    projectPath = os.path.join('/var', "certification", doc["_id"])
     toYamlPath = os.path.join(toPath,"configtx.yaml")
     if doc["consensus"] == "raft":
         yamlDemo = os.path.join(curPath, "yaml", "configtx_raft.yaml")
@@ -418,7 +422,7 @@ def Tar(doc):
 
 def GenerateApiJson(doc):
     print(doc["_id"])
-    ProPath = os.path.join("var","certification",doc["_id"])
+    ProPath = os.path.join("/var","certification",doc["_id"])
 
     Json = {}
     Json["host"]="localhost"
@@ -428,7 +432,7 @@ def GenerateApiJson(doc):
     Json["consensus"] = doc["consensus"]
     Json["caUser"] = "admin"
     Json["caSecret"] = "adminpw"
-    Json["ccSrcPath"] = os.path.join(ProPath,"cc")
+    Json["CC_SRC_PATH"] = os.path.join(ProPath,"cc")
     Json["caUser"] = "admin"
     Json["eventWaitTime"] = "100000"
     Json["expireTime"] = "360000"
@@ -514,7 +518,7 @@ def GenerateApiJson(doc):
     toPath = os.path.join(curPath, "certification", doc["_id"])
     for org in doc["orgs"]:
 
-        caCertFilePath = os.path.join(toPath, "crypto-config", "peerOrganizations","%s.%s" % (org["orgId"], doc["domain"]), "ca")
+        caCertFilePath = os.path.join(toPath, "crypto-config", "peerOrganizations","%s.%s" % (org["orgId"], doc["domain"]), "users","Admin@%s.%s"%(org["orgId"],doc["domain"]),"msp","keystore")
 
         files = os.listdir(caCertFilePath)
 

@@ -110,7 +110,7 @@ class Channel(Resource):
         curPath = os.path.abspath(os.curdir)
         toPath = os.path.join(curPath, "certification", doc["_id"])
         # export FABRIC_CFG_PATH =$PWD;
-        commandline = "cd %s;  ../configtxgen -profile ProjectOrgsChannel -outputCreateChannelTx ./%s.tx -channelID %s;"%(toPath,channelid,channelid)
+        commandline = "cd %s; export FABRIC_CFG_PATH=$PWD; ../configtxgen -profile ProjectOrgsChannel -outputCreateChannelTx ./%s.tx -channelID %s;"%(toPath,channelid,channelid)
         print(commandline)
         os.system(commandline)
 

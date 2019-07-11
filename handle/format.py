@@ -2,6 +2,7 @@ from flask_restful import Resource,reqparse
 from flask import json,  jsonify
 from . import Couchdb as db
 
+
 parser = reqparse.RequestParser(trim=True)
 parser.add_argument("domain")
 parser.add_argument("orders",action='append',location=['json','args'],type=dict)
@@ -9,6 +10,7 @@ parser.add_argument("orgs",type=dict,action='append')
 
 
 class Format(Resource):
+    # method_decorators = [auth.login_required]
     def post(self):
         args = parser.parse_args()
         domain = args["domain"]
