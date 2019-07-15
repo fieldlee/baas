@@ -1,22 +1,19 @@
-# Copyright IBM Corp. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
 
----
-################################################################################
-#
-#   Section: Organizations
-#
-#   - This section defines the different organizational identities which will
-#   be referenced later in the configuration.
-#
-################################################################################
 Organizations:
     - &-OrgIDForReplace-
         Name: -OrgIDForReplace-
         ID: -OrgIDForReplace-
         MSPDir: -ProjectDIR-/crypto-config/peerOrganizations/-OrgIDForReplace-.-DomainForReplace-/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('-OrgIDForReplace-.admin', '-OrgIDForReplace-.peer', '-OrgIDForReplace-.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('-OrgIDForReplace-.admin', '-OrgIDForReplace-.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('-OrgIDForReplace-.admin')"
         AnchorPeers:
-            - Host: peer0.-OrgIDForReplace-.-DomainForReplace-
-              Port: 7051
+            - Host: -AnchorIPForReplace-
+              Port: -AnchorPortForReplace-

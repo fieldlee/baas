@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_jsonrpc import JSONRPC
 from flask_httpauth import HTTPTokenAuth
-from handle import format,generate,upenv,clone,install
+from handle import format,generate,upenv,clone,install,add
 
 
 baasApp = Flask(__name__)
@@ -24,6 +24,7 @@ api.add_resource(upenv.ApiGene,'/api')
 api.add_resource(clone.Clone,'/clone')
 #生成chaincode shell命令
 api.add_resource(install.Install,'/code')
-
+#生成addOrg
+api.add_resource(add.Add,'/addorg')
 if __name__ == "__main__":
-    baasApp.run(debug=True,port=8080)
+    baasApp.run(debug=True,port=8000)

@@ -45,7 +45,8 @@ class Generate(Resource):
         untils.GenerateCouch(doc)
         # 生成cayaml
         untils.GenerateCa(doc)
-
+        # 生成cliyaml
+        untils.GenerateCli(doc)
         #生成
         untils.Tar(doc)
 

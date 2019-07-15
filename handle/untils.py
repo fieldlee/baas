@@ -144,8 +144,6 @@ def ReplacePeerYaml(line,peer,org,doc):
 
 def ReplaceCouch(line,peer,org,doc):
     newline = line
-    curPath = os.path.abspath(os.curdir)
-    toPath = os.path.join(curPath, "certification", doc["_id"])
     # -ContainerIdForReplace-
     # -CouchUserForReplace-
     # -CouchPasswordForReplace-
@@ -188,6 +186,71 @@ def ReplaceCa(line,org,doc):
     newline = newline.replace("-CAPEMFILENAMEForReplace-", caSkPath)
 
 
+    return newline
+
+def ReplaceCli(line,doc,*args):
+    newline = line
+    cryptoPath = os.path.join('/var', "certification", doc["_id"],"crypto-config")
+
+    defaultIP = doc["orgs"][0]["anchorIp"]
+
+    if args:
+        firstId = args[0]
+        cliId = '%scli'%firstId
+        ArtifactsPath = os.path.join('/var', "certification", doc["_id"], firstId)
+        newline = newline.replace("-ArtifactsPathForReplace-", ArtifactsPath)
+
+        if "##ExistOrgList" in line:
+            for org in doc["orgs"]:
+                if not org["orgId"] in args[0]:
+                    newline += "        - %s/peerOrganizations/%s.%s:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/%s.%s \n" % (
+                    cryptoPath, org["orgId"], doc["domain"], org["orgId"], doc["domain"])
+
+
+    else:
+        firstId = doc["orgs"][0]["orgId"]
+        cliId = 'cli'
+        #特殊处理ArtifactsPathForReplace 删除
+        if "-ArtifactsPathForReplace-" in newline:
+            return
+
+    firstOrder = doc["orders"][0]
+    #-OrgCliForReplace -
+    newline = newline.replace("-OrgCliForReplace-", cliId)
+    newline = newline.replace("-OrgIDForReplace-", firstId)
+    newline = newline.replace("-DomainForReplace-", doc["domain"])
+    newline = newline.replace("-CryptoPathForReplace-", cryptoPath)
+    newline = newline.replace("-OrderDomainForReplace-", firstOrder["containerId"])
+    newline = newline.replace("-OrderIPForReplace-", firstOrder["orderIp"])
+
+
+    if "##ExtraList" in line:
+        for order in doc["orders"]:
+            if not order["orderIp"] in defaultIP:
+                newline += "        - %s:%s\n"%(order["containerId"],order["orderIp"])
+
+        for org in doc["orgs"]:
+            if not org["anchorIp"] in defaultIP:
+                newline += "        - %s.%s:%s\n" % (org["orgId"],doc["domain"], org["anchorIp"])
+
+    return newline
+
+def ReplaceAddCryptYaml(line,doc,orgId):
+    curPath = os.path.abspath(os.curdir)
+    projectPath = os.path.join(curPath, "certification", doc["_id"])
+    newline = line
+    #-OrgIDForReplace-
+    #-ProjectDIR-
+    #-DomainForReplace-
+    newline = newline.replace("-OrgIDForReplace-", orgId)
+    newline = newline.replace("-DomainForReplace-", doc["domain"])
+    newline = newline.replace("-ProjectDIR-", projectPath)
+    #-AnchorPortForReplace-
+    for org in doc["orgs"]:
+        if org["orgId"] is orgId:
+            newline = newline.replace("-AnchorPortForReplace-", str(org["anchorPort"]))
+            newline = newline.replace("-AnchorIPForReplace-", org["anchorIp"])
+            #-AnchorIPForReplace-
     return newline
 
 def GenerateConfigtx(doc):
@@ -297,60 +360,104 @@ def GenerateOrder(doc):
             finally:
                 file.close()
 
-def GeneratePeer(doc):
+def GenerateAddCrypto(doc,*args):
+    curPath = os.path.abspath(os.curdir)
+    yamlDemo = os.path.join(curPath, "yaml", "addorg_crypto.yaml")
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+
+    if args:
+        toYamlPath = os.path.join(toPath, "crypto_%s.yaml" % args[0])
+
+        CreateFile(toYamlPath)
+
+        file = open(yamlDemo, 'r')
+
+        with open(toYamlPath, 'w') as tofile:
+            try:
+                while True:
+                    text_line = file.readline()
+                    if text_line:
+                        tofile.write(ReplaceAddCryptYaml(text_line,doc,args[0]))
+                    else:
+                        break
+            finally:
+                file.close()
+
+def GenerateAddConfigtx(doc,*args):
+    #新建以组织id命名的文件夹
+    curPath = os.path.abspath(os.curdir)
+    yamlDemo = os.path.join(curPath, "yaml", "configtx_add.yaml")
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+    CreateDir(os.path.join(curPath,"certification", doc["_id"],args[0]))
+    if args:
+        toYamlPath = os.path.join(toPath,args[0], "configtx.yaml")
+
+        CreateFile(toYamlPath)
+
+        file = open(yamlDemo, 'r')
+
+        with open(toYamlPath, 'w') as tofile:
+            try:
+                while True:
+                    text_line = file.readline()
+                    if text_line:
+                        tofile.write(ReplaceAddCryptYaml(text_line,doc,args[0]))
+                    else:
+                        break
+            finally:
+                file.close()
+
+def GeneratePeer(doc,*args):
     curPath = os.path.abspath(os.curdir)
     yamlDemo = os.path.join(curPath, "yaml", "peer_demo.yaml")
     toPath = os.path.join(curPath, "certification", doc["_id"])
     # peer yaml文件
     hasWait = False
     forRplLine = ""
-    for org in doc["orgs"]:
-        for peer in org["peers"]:
+    print(args)
+    if args:
+        tId = args[0]
+        for org in doc["orgs"]:
+            if org["orgId"] is tId:
+                for peer in org["peers"]:
+                    toYamlPath = os.path.join(toPath, "%s_%s.yaml" % (peer["peerId"], org["orgId"]))
+                    # 创建yaml文件
+                    CreateFile(toYamlPath)
+                    file = open(yamlDemo, 'r')
+                    with open(toYamlPath, 'w') as tofile:
+                        try:
+                            while True:
+                                text_line = file.readline()
+                                if text_line:
+                                    # 如果是list 一直等待end to replace
+                                    if ("##COUCH_Start" in text_line) or ("##OrderExtra_Start" in text_line) or (
+                                            "##DependOn_Start" in text_line):
+                                        hasWait = True
+                                    # 如果不是list 直接调用replace
+                                    if not hasWait:
+                                        tofile.write(ReplacePeerYaml(text_line, peer, org, doc))
+                                        continue
 
-            toYamlPath = os.path.join(toPath, "%s_%s.yaml" % (peer["peerId"],org["orgId"]))
-            # 创建yaml文件
-            CreateFile(toYamlPath)
+                                    if hasWait == True:
+                                        forRplLine += text_line
 
-            file = open(yamlDemo, 'r')
+                                    if ("##COUCH_End" in text_line) or ("##OrderExtra_End" in text_line) or (
+                                            "##DependOn_End" in text_line):
+                                        hasWait = False
 
-            with open(toYamlPath, 'w') as tofile:
-                try:
-                    while True:
-                        text_line = file.readline()
-                        if text_line:
-                            # 如果是list 一直等待end to replace
-                            if ("##COUCH_Start" in text_line) or ("##OrderExtra_Start" in text_line) or ("##DependOn_Start" in text_line):
-                                hasWait = True
-                            # 如果不是list 直接调用replace
-                            if not hasWait:
-                                tofile.write(ReplacePeerYaml(text_line, peer,org,doc))
-                                continue
+                                    if not hasWait:
+                                        tofile.write(ReplacePeerYaml(forRplLine, peer, org, doc))
+                                        forRplLine = ""
 
-                            if hasWait == True:
-                                forRplLine += text_line
+                                else:
+                                    break
+                        finally:
+                            file.close()
 
-                            if ("##COUCH_End" in text_line) or ("##OrderExtra_End" in text_line) or ("##DependOn_End" in text_line):
-                                hasWait = False
-
-                            if not hasWait:
-                                tofile.write(ReplacePeerYaml(forRplLine, peer,org,doc))
-                                forRplLine = ""
-
-                        else:
-                            break
-                finally:
-                    file.close()
-
-def GenerateCouch(doc):
-    curPath = os.path.abspath(os.curdir)
-    yamlDemo = os.path.join(curPath, "yaml", "couch_demo.yaml")
-    toPath = os.path.join(curPath, "certification", doc["_id"])
-
-    # 生成order yaml文件
-    for org in doc["orgs"]:
-        for peer in org["peers"]:
-            if "joinCouch" in peer :
-                toYamlPath = os.path.join(toPath, "couch_%s_%s.yaml" % (peer["peerId"],org["orgId"]))
+    else:
+        for org in doc["orgs"]:
+            for peer in org["peers"]:
+                toYamlPath = os.path.join(toPath, "%s_%s.yaml" % (peer["peerId"],org["orgId"]))
                 # 创建yaml文件
                 CreateFile(toYamlPath)
 
@@ -361,11 +468,78 @@ def GenerateCouch(doc):
                         while True:
                             text_line = file.readline()
                             if text_line:
-                                tofile.write(ReplaceCouch(text_line, peer, org, doc))
+                                # 如果是list 一直等待end to replace
+                                if ("##COUCH_Start" in text_line) or ("##OrderExtra_Start" in text_line) or ("##DependOn_Start" in text_line):
+                                    hasWait = True
+                                # 如果不是list 直接调用replace
+                                if not hasWait:
+                                    tofile.write(ReplacePeerYaml(text_line, peer,org,doc))
+                                    continue
+
+                                if hasWait == True:
+                                    forRplLine += text_line
+
+                                if ("##COUCH_End" in text_line) or ("##OrderExtra_End" in text_line) or ("##DependOn_End" in text_line):
+                                    hasWait = False
+
+                                if not hasWait:
+                                    tofile.write(ReplacePeerYaml(forRplLine, peer,org,doc))
+                                    forRplLine = ""
+
                             else:
                                 break
                     finally:
                         file.close()
+
+def GenerateCouch(doc,*args):
+    curPath = os.path.abspath(os.curdir)
+    yamlDemo = os.path.join(curPath, "yaml", "couch_demo.yaml")
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+
+    if args:
+        tId = args[0]
+        for org in doc["orgs"]:
+            if org["orgId"] is tId:
+                for peer in org["peers"]:
+                    if "joinCouch" in peer:
+                        toYamlPath = os.path.join(toPath, "couch_%s_%s.yaml" % (peer["peerId"], org["orgId"]))
+                        # 创建yaml文件
+                        CreateFile(toYamlPath)
+
+                        file = open(yamlDemo, 'r')
+
+                        with open(toYamlPath, 'w') as tofile:
+                            try:
+                                while True:
+                                    text_line = file.readline()
+                                    if text_line:
+                                        tofile.write(ReplaceCouch(text_line, peer, org, doc))
+                                    else:
+                                        break
+                            finally:
+                                file.close()
+    else:
+
+    # 生成order yaml文件
+        for org in doc["orgs"]:
+            for peer in org["peers"]:
+                if "joinCouch" in peer :
+                    toYamlPath = os.path.join(toPath, "couch_%s_%s.yaml" % (peer["peerId"],org["orgId"]))
+                    # 创建yaml文件
+                    CreateFile(toYamlPath)
+
+                    file = open(yamlDemo, 'r')
+
+                    with open(toYamlPath, 'w') as tofile:
+                        try:
+                            while True:
+                                text_line = file.readline()
+                                if text_line:
+                                    tofile.write(ReplaceCouch(text_line, peer, org, doc))
+                                else:
+                                    break
+                        finally:
+                            file.close()
 
 def GenerateCa(doc):
     curPath = os.path.abspath(os.curdir)
@@ -384,6 +558,45 @@ def GenerateCa(doc):
                     text_line = file.readline()
                     if text_line:
                         tofile.write(ReplaceCa(text_line, org, doc))
+                    else:
+                        break
+            finally:
+                file.close()
+
+def GenerateCli(doc,*args):
+    curPath = os.path.abspath(os.curdir)
+    yamlDemo = os.path.join(curPath, "yaml", "cli_demo.yaml")
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+
+    if args:
+        TmpId = args[0]
+        # 生成order yaml文件
+        toYamlPath = os.path.join(toPath, "cli_%s.yaml"%TmpId)
+        # 创建yaml文件
+        CreateFile(toYamlPath)
+        file = open(yamlDemo, 'r')
+        with open(toYamlPath, 'w') as tofile:
+            try:
+                while True:
+                    text_line = file.readline()
+                    if text_line:
+                        tofile.write(ReplaceCli(text_line, doc,args[0]))
+                    else:
+                        break
+            finally:
+                file.close()
+    else:
+        # 生成order yaml文件
+        toYamlPath = os.path.join(toPath, "cli.yaml")
+        # 创建yaml文件
+        CreateFile(toYamlPath)
+        file = open(yamlDemo, 'r')
+        with open(toYamlPath, 'w') as tofile:
+            try:
+                while True:
+                    text_line = file.readline()
+                    if text_line:
+                        tofile.write(ReplaceCli(text_line, doc))
                     else:
                         break
             finally:
@@ -549,6 +762,67 @@ def GenerateApiJson(doc):
     with open(jsonFile,'w') as jFile:
         jFile.write(json.dumps(Json))
 
+def GenerateCliAndAddCli(doc,channel,orgid):
+    curPath = os.path.abspath(os.curdir)
+    cliDemo = os.path.join(curPath, "yaml", "cli.sh")
+    toPath = os.path.join(curPath, "certification", doc["_id"])
+    toCliPath = os.path.join(toPath, "cli.sh")
+
+    addcliDemo = os.path.join(curPath, "yaml", "add_cli.sh")
+    addToCliPath = os.path.join(toPath, "%s_cli.sh"%orgid)
+    file = open(cliDemo, 'r')
+    # 创建yaml文件
+    CreateFile(toCliPath)
+
+    with open(toCliPath, 'w') as tofile:
+        try:
+            while True:
+                text_line = file.readline()
+                if text_line:
+                    tofile.write(ReplaceCliSh(text_line,doc,channel,orgid))
+                else:
+                    break
+        finally:
+            file.close()
+
+    file2 = open(addcliDemo, 'r')
+    # 创建yaml文件
+    CreateFile(addToCliPath)
+    with open(addToCliPath, 'w') as tofile:
+        try:
+            while True:
+                text_line = file2.readline()
+                if text_line:
+                    tofile.write(ReplaceCliSh(text_line, doc, channel, orgid))
+                else:
+                    break
+        finally:
+            file2.close()
+
+
+def ReplaceCliSh(line,doc,channel,orgid):
+    newline = line
+    #-DomainForReplace-
+    #-OrderIdForReplace-
+    #-ChannelIdForReplace-
+    #-OrgIDForReplace-
+    orderid = doc["orders"][0]["orderId"]
+    newline = newline.replace("-OrgIDForReplace-", orgid)
+    newline = newline.replace("-OrgIdForReplace-", orgid)
+    newline = newline.replace("-DomainForReplace-", doc["domain"])
+    newline = newline.replace("-OrderIdForReplace-", orderid)
+    newline = newline.replace("-ChannelIdForReplace-", channel)
+
+    #-Peer1PortForReplace-
+    for org in doc["orgs"]:
+        for peer in org["peers"]:
+            if org["orgId"] in orgid:
+                if peer["peerId"] in "peer1":
+                    newline = newline.replace("-Peer1PortForReplace-", str(peer["postPort"]))
+
+    #-ChannelIdForReplace-
+    #-OrgIdForReplace-
+    return newline
 
 def RemoveFloder(top):
     for root, dirs, files in os.walk(top, topdown=False):

@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "63308690-7816-4efb-8d5b-92d38afb5612",
-		"name": "testPythonBaaS",
+		"name": "pythonBaaS",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"domain\":\"51mm.com\",\r\n  \"channel\":\"mmchannel\",\r\n  \"orders\":[\r\n  \t\t{\r\n  \t\t\"orderIp\":\"192.168.0.203\"\r\n  \t\t},\r\n  \t\t{\r\n  \t\t\"orderIp\":\"192.168.0.203\"\r\n  \t\t}\r\n  \t],\r\n  \"orgs\":[\r\n  \t\t{\r\n  \t\t\t\"orgId\":\"mmOrg\",\r\n  \t\t\t\"peers\":[\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.0.203\"\r\n  \t\t\t\t},\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.0.203\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t}\r\n  \t\t\t]\r\n  \t\t},\r\n  \t\t{\r\n  \t\t\t\"orgId\":\"oneOrg\",\r\n  \t\t\t\"peers\":[\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.0.203\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t},\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.0.203\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t}\r\n  \t\t\t]\r\n  \t\t}\r\n  \t]\r\n}"
+					"raw": "{\r\n  \"domain\":\"51mm.com\",\r\n  \"channel\":\"mmchannel\",\r\n  \"orders\":[\r\n  \t\t{\r\n  \t\t\"orderIp\":\"192.168.1.31\"\r\n  \t\t},\r\n  \t\t{\r\n  \t\t\"orderIp\":\"192.168.1.31\"\r\n  \t\t},\r\n  \t\t{\r\n  \t\t\"orderIp\":\"192.168.1.31\"\r\n  \t\t},\r\n  \t\t{\r\n  \t\t\"orderIp\":\"192.168.1.31\"\r\n  \t\t},\r\n  \t\t{\r\n  \t\t\"orderIp\":\"192.168.1.31\"\r\n  \t\t}\r\n  \t],\r\n  \"orgs\":[\r\n  \t\t{\r\n  \t\t\t\"orgId\":\"mmOrg\",\r\n  \t\t\t\"peers\":[\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.1.31\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t},\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.1.31\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t}\r\n  \t\t\t]\r\n  \t\t},\r\n  \t\t{\r\n  \t\t\t\"orgId\":\"oneOrg\",\r\n  \t\t\t\"peers\":[\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.1.31\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t},\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.1.31\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t}\r\n  \t\t\t]\r\n  \t\t}\r\n  \t]\r\n}"
 				},
 				"url": {
 					"raw": "http://127.0.0.1:8080/save",
@@ -39,6 +39,39 @@
 			"response": []
 		},
 		{
+			"name": "python_addorg",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\":\"efe73f3dd0450bc689f0c9671b000cce\",\r\n  \"channel\":\"mmchannel\",\r\n  \"org\":[\r\n  \t\t{\r\n  \t\t\t\"orgId\":\"twoOrg\",\r\n  \t\t\t\"peers\":[\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.1.31\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t},\r\n  \t\t\t\t{\r\n  \t\t\t\t\t\"peerIp\":\"192.168.1.31\",\r\n  \t\t\t\t\t\"joinCouch\":true\r\n  \t\t\t\t}\r\n  \t\t\t]\r\n  \t\t}\r\n  \t]\r\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/addorg",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"addorg"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "python_generate",
 			"request": {
 				"method": "POST",
@@ -52,7 +85,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\"\n}"
+					"raw": "{\n\t\"id\":\"bbc3445916053b7051011f186b002171\"\n}"
 				},
 				"url": {
 					"raw": "http://127.0.0.1:8080/generate",
@@ -85,7 +118,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\"\n}"
+					"raw": "{\n\t\"id\":\"bbc3445916053b7051011f186b002171\"\n}"
 				},
 				"url": {
 					"raw": "http://127.0.0.1:8080/up",
@@ -118,7 +151,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\"\n}"
+					"raw": "{\n\t\"id\":\"bbc3445916053b7051011f186b002171\"\n}"
 				},
 				"url": {
 					"raw": "http://127.0.0.1:8080/api",
@@ -151,7 +184,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"id\":\"9a30101725c6b582de36fa312e002ff6\",\n\t\"channel\":\"mmchannel\"\n}"
+					"raw": "{\n\t\"id\":\"bbc3445916053b7051011f186b002171\",\n\t\"channel\":\"mmchannel\"\n}"
 				},
 				"url": {
 					"raw": "http://127.0.0.1:8080/channel",
@@ -231,6 +264,193 @@
 					"port": "8080",
 					"path": [
 						"code"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"mmOrg\",\n\t\"password\":\"password\",\n\t\"orgname\":\"mmOrg\"\n}"
+				},
+				"url": {
+					"raw": "http://192.168.1.31:4000/login",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"1",
+						"31"
+					],
+					"port": "4000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_channels",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjMwOTk2NzgsInVzZXJuYW1lIjoibW1PcmciLCJvcmdOYW1lIjoibW1PcmciLCJpYXQiOjE1NjI3Mzk2Nzh9.W9WhXpCrBL9PqRLFPPOrvY1afOVaJdH2rUgbQg_AT-A",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"channelName\":\"mmchannel\",\"channelConfigPath\":\"/var/certification/bbc3445916053b7051011f186b002171/mmchannel.tx\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:4000/channels",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "4000",
+					"path": [
+						"channels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_channels/peers ",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjMxMTI2MDUsInVzZXJuYW1lIjoib25lT3JnIiwib3JnTmFtZSI6Im9uZU9yZyIsImlhdCI6MTU2Mjc1MjYwNX0.dyNTygg709TxxWBX28RMnQK_PgpLaDnEzldaTgYMWj8",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"peers\": [\"peer0.oneOrg.51mm.com\",\"peer1.oneOrg.51mm.com\"],\"channelName\":\"mmchannel\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:4000/channels/peers",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "4000",
+					"path": [
+						"channels",
+						"peers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_chaincodes",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjMxMTQxODgsInVzZXJuYW1lIjoib25lT3JnIiwib3JnTmFtZSI6Im9uZU9yZyIsImlhdCI6MTU2Mjc1NDE4OH0.YZ-xtGHIQ4GNW3xSAdZN7wFmpJx-04NlnH6pWPUNl4s",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"peers\": [\"peer0.oneOrg.51mm.com\",\"peer1.oneOrg.51mm.com\"],\n\t\"channelName\": \"mmchannel\",\n\t\"chaincodeName\": \"ledger\",\n\t\"chaincodePath\": \"ledger\",\n\t\"chaincodeVersion\": \"v2.0\"\n\t\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:4000/chaincodes",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "4000",
+					"path": [
+						"chaincodes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "python_channels/chaincodes",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjMxMTM4NTcsInVzZXJuYW1lIjoibW1PcmciLCJvcmdOYW1lIjoibW1PcmciLCJpYXQiOjE1NjI3NTM4NTd9.HBGXI3VOwtJXDETeY4frg2an_l3PYp4vZNwRLvFJODA",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"channelName\": \"mmchannel\",\"chaincodeName\": \"ledger\",\"chaincodeVersion\": \"v1.0\",\"args\": []}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:4000/channels/chaincodes",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "4000",
+					"path": [
+						"channels",
+						"chaincodes"
 					]
 				}
 			},
