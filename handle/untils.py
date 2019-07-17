@@ -822,6 +822,16 @@ def ReplaceCliSh(line,doc,channel,orgid):
 
     #-ChannelIdForReplace-
     #-OrgIdForReplace-
+    if "##ExportList" in line:
+        newline = ""
+        for org in doc["orgs"]:
+            if not org["orgId"] in orgid:
+                newline += "export CORE_PEER_LOCALMSPID=\"%s\"\n"%org["orgId"]
+                newline += "export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/%s.%s/peers/peer0.%s.%s/tls/ca.crt\n"%(org["orgId"],doc["domain"],org["orgId"],doc["domain"])
+                newline += "export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/%s.%s/users/Admin@%s.%s/msp\n"%(org["orgId"],doc["domain"],org["orgId"],doc["domain"])
+                newline += "export CORE_PEER_ADDRESS=peer0.%s.%s:%s\n"%(org["orgId"],doc["domain"],str(org["anchorPort"]))
+                newline += "\n"
+
     return newline
 
 def RemoveFloder(top):

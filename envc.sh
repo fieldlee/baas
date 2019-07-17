@@ -84,5 +84,5 @@ sudo env/get-images.sh
 sudo chmod a+x ./env/set-images-latest.sh
 sudo env/set-images-latest.sh
 
-# curl -sSL http://bit.ly/2ysbOFE | bash -s -- 1.4.1 1.4.1 0.4.15
+# curl -sSL https://bit.ly/2ysbOFE | bash -s -- 1.4.1 1.4.1 0.4.15
 

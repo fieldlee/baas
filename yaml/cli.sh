@@ -26,12 +26,6 @@ configtxlator proto_encode --input -OrgIDForReplace-_update_in_envelope.json --t
 
 peer channel signconfigtx -f -OrgIDForReplace-_update_in_envelope.pb
 
-#export CORE_PEER_LOCALMSPID="Org2MSP"
-#
-#export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-#
-#export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
-#
-#export CORE_PEER_ADDRESS=peer0.org2.example.com:9051
+############ExportList
 
 peer channel update -f -OrgIDForReplace-_update_in_envelope.pb -c -ChannelIdForReplace- -o -OrderIdForReplace-.-DomainForReplace-:7050 --tls --cafile $ORDERER_CA
