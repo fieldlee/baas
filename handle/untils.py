@@ -56,7 +56,7 @@ def ReplaceYaml(line,doc):
 
     return newline
 
-def ReplaceOrderYaml(line,order,domain,docid):
+def ReplaceOrderYaml(line,order,domain,docid,orders):
     newline = line
 
     curPath = os.path.abspath(os.curdir)
@@ -68,6 +68,18 @@ def ReplaceOrderYaml(line,order,domain,docid):
     newline = newline.replace("-DomainForReplace-", domain)
     newline = newline.replace("-OrderIDForReplace-", order["orderId"])
     newline = newline.replace("-OrderPortForReplace-", str(order["orderPort"]))
+
+    if "##Extra_Hosts" in line:
+        hasExtra = False
+        newline = "    extra_hosts:\n"
+        for tmpOrder in orders:
+            if tmpOrder["orderIp"] != order["orderIp"]:
+                hasExtra = True
+                newline += "      - \"%s.%s:%s\"\n"%(tmpOrder["orderId"],domain,tmpOrder["orderIp"])
+
+        if  hasExtra == False :
+            newline = ""
+
     return newline
 
 def ReplacePeerYaml(line,peer,org,doc):
@@ -354,7 +366,7 @@ def GenerateOrder(doc):
                 while True:
                     text_line = file.readline()
                     if text_line:
-                        tofile.write(ReplaceOrderYaml(text_line, order,doc["domain"],doc["_id"]))
+                        tofile.write(ReplaceOrderYaml(text_line, order,doc["domain"],doc["_id"],doc["orders"]))
                     else:
                         break
             finally:

@@ -33,6 +33,9 @@ services:
     command: orderer
     ports:
       - -OrderPortForReplace-:7050
+
+########Extra_Hosts
+
     volumes:
       - -ProjectDIR-/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
       - -ProjectDIR-/crypto-config/ordererOrganizations/-DomainForReplace-/orderers/-OrderIDForReplace-.-DomainForReplace-/msp:/var/hyperledger/orderer/msp
