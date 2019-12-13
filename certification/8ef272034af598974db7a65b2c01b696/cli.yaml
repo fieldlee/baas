@@ -1,0 +1,41 @@
+version: '2'
+
+networks:
+  default:
+
+services:
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools
+    privileged: true
+    stdin_open: true
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_TLS_ENABLED=True
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.mmOrg.51mm.com:7051
+      - CORE_PEER_LOCALMSPID=mmOrg
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mmOrg.51mm.com/peers/peer0.mmOrg.51mm.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mmOrg.51mm.com/peers/peer0.mmOrg.51mm.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mmOrg.51mm.com/peers/peer0.mmOrg.51mm.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mmOrg.51mm.com/users/Admin@mmOrg.51mm.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash -c 'sleep 10000'
+    volumes:
+        - /var/run/:/host/var/run/
+        - /var/certification/efe73f3dd0450bc689f0c9671b000cce/twoOrg:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+        - /var/certification/8ef272034af598974db7a65b2c01b696/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+#########ExistOrgList
+
+    extra_hosts:
+#########ExtraList
+        - order2.51mm.com:192.168.1.110
+        - order3.51mm.com:192.168.1.110
+        - oneOrg.51mm.com:192.168.1.110
+
+    networks:
+      - default

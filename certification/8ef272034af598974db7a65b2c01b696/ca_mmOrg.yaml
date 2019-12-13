@@ -1,0 +1,29 @@
+version: '2'
+
+networks:
+  default:
+
+services:
+
+  ca.mmOrg.51mm.com:
+    image: hyperledger/fabric-ca
+    privileged: true
+    environment:
+      - GODEBUG=netdns=go
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.mmOrg.51mm.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server/ca.mmOrg.51mm.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server/194c01387feffa129d8239bc87398e49ff12ffb44aaa31e3d2e5d5454d718fe8_sk
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server/ca.mmOrg.51mm.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server/194c01387feffa129d8239bc87398e49ff12ffb44aaa31e3d2e5d5454d718fe8_sk
+      - FABRIC_CA_SERVER_PORT=7054
+    ports:
+      - 7054:7054
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - /var/certification/8ef272034af598974db7a65b2c01b696/crypto-config/peerOrganizations/mmOrg.51mm.com/ca:/etc/hyperledger/fabric-ca-server
+    container_name: ca.mmOrg.51mm.com
+    networks:
+      - default
+      

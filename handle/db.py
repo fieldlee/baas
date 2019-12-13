@@ -1,3 +1,6 @@
+#!/usr/bin/python
+#coding:utf-8
+
 import couchdb
 
 couch = couchdb.Server("http://couchadmin:adminpwd@127.0.0.1:5984/")

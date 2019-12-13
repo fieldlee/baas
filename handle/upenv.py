@@ -1,3 +1,6 @@
+#!/usr/bin/python
+#coding:utf-8
+
 import os
 from flask_restful import Resource,reqparse
 from flask import jsonify

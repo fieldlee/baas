@@ -1,3 +1,6 @@
+#!/usr/bin/python
+#coding:utf-8
+
 from flask_restful import Resource,reqparse
 from flask import json,  jsonify
 from . import Couchdb as db

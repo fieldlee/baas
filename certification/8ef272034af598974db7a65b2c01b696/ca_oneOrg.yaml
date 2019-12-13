@@ -1,0 +1,29 @@
+version: '2'
+
+networks:
+  default:
+
+services:
+
+  ca.oneOrg.51mm.com:
+    image: hyperledger/fabric-ca
+    privileged: true
+    environment:
+      - GODEBUG=netdns=go
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.oneOrg.51mm.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server/ca.oneOrg.51mm.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server/8bf539548cf65c32a267ac86a0636123f206c2cd6f0adbee8229b2f6a8547fed_sk
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server/ca.oneOrg.51mm.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server/8bf539548cf65c32a267ac86a0636123f206c2cd6f0adbee8229b2f6a8547fed_sk
+      - FABRIC_CA_SERVER_PORT=9054
+    ports:
+      - 9054:9054
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - /var/certification/8ef272034af598974db7a65b2c01b696/crypto-config/peerOrganizations/oneOrg.51mm.com/ca:/etc/hyperledger/fabric-ca-server
+    container_name: ca.oneOrg.51mm.com
+    networks:
+      - default
+      
